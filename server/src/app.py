@@ -33,6 +33,9 @@ def sign_up():
 def dashboard():
     return render_template("dashboard.html")
 
+@app.route("/settings")
+def settings():
+    return render_template("settings.html")
 
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', port=int(os.environ.get('PORT', 8080)))
