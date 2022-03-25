@@ -14,6 +14,10 @@ def sign_in():
 def sign_up():
     return render_template("sign-up.html")
 
+@app.route("/dashboard")
+def dashboard():
+    return render_template("dashboard.html")
+
 
 if __name__ == "__main__":
     app.run(debug=True)
