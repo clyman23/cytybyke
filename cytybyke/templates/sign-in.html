@@ -2,4 +2,15 @@
 
 {% block content %}
 <h1>Welcome to sign-in page</h1>
+
+<h2>Enter your information below to join the Cyty dwellers</h2>
+<input type="text" name="email"
+               placeholder="Email Address"
+               value="{{ request.form['email'] }}"></input>
+<input type="text" name="password"
+                placeholder="Password"
+                value="{{ request.form['password'] }}"></input>
+<div>
+    <a class="btn btn-outline-primary" href="/dashboard">Save</a>
+</div>
 {% endblock content %}
