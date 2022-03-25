@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<h1>Welcome to your Settings page</h1>
+
+<h2>Save your favorite stations!</h2>
+
+<input type="text" name="station1"
+               placeholder="Favorite Station"
+               value="{{ request.form['station1'] }}"></input>
+<input type="text" name="station2"
+                placeholder="Second Favorite Station"
+                value="{{ request.form['station2'] }}"></input>
+<input type="text" name="station3"
+                placeholder="Third Favorite Station"
+                value="{{ request.form['station3'] }}"></input>
+<div>
+    <a class="btn btn-outline-primary" href="/dashboard">Save</a>
+</div>
+
+{% endblock content %}
