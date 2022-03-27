@@ -12,7 +12,7 @@
                 placeholder="Password"
                 value="{{ request.form['password'] }}"></input>
 <div>
-    <a class="btn btn-outline-primary" href="/settings">Save</a>
+    <a class="btn btn-outline-primary" href="{{ url_for('settings') }}">Save</a>
 </div>
 
 {% endblock content %}
