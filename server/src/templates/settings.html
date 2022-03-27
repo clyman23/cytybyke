@@ -15,7 +15,7 @@
                 placeholder="Third Favorite Station"
                 value="{{ request.form['station3'] }}"></input>
 <div>
-    <a class="btn btn-outline-primary" href="/dashboard">Save</a>
+    <a class="btn btn-outline-primary" href="{{ url_for('dashboard') }}">Save</a>
 </div>
 
 {% endblock content %}

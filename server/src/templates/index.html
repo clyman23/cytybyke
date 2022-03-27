@@ -6,9 +6,9 @@
 <!-- Placeholder to show it is dynamic -->
 <p>{{ context.server_time }}</p>
 <div>
-    <a class="btn btn-outline-primary" href="/sign-in">Sign in</a>
+    <a class="btn btn-outline-primary" href="{{ url_for('sign_in') }}">Sign in</a>
 </div>
 <div>
-    <a class="btn btn-outline-secondary" href="/sign-up">Sign up</a>
+    <a class="btn btn-outline-secondary" href="{{ url_for('sign_up') }}">Sign up</a>
 </div>
 {% endblock content %}
