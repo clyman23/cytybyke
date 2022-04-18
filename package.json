@@ -18,5 +18,8 @@
   "homepage": "https://github.com/clyman23/cytybyke#readme",
   "devDependencies": {
     "firebase-tools": "^10.5.0"
+  },
+  "dependencies": {
+    "firebase": "^9.6.11"
   }
 }
