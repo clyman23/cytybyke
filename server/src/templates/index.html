@@ -1,14 +1,32 @@
 {% extends "layout.html" %}
-
+ 
 {% block content %}
-<h1>Hello world!</h1>
-<h1>Welcome to CytyByke</h1>
+<h1 class="text-center p-4"><b>CytyByke</b></h1>
+<hr/>
+<h2 class="text-center p-2">Custom Citi Bike Dashboard</h2>
+<h3 class="text-center text-muted p-2">
+   Stayed informed about the conditions of your favorite Citi Bike docks
+</h3>
+
+<div class="container">
+    <div class="row">
+      <img class='img-fluid w-100 px-0' src="https://nycdotbikeshare.info/sites/default/files/2018-07/Citi%20Bike%20Riders%20in%20NYC_cropped.jpg" alt=""/>
+    </div>
+</div>
+
+<div class="col text-center p-4">
+    <a class="btn btn-secondary btn-lg active" href="{{ url_for('sign_in') }}">Sign in</a>
+    <a class="btn btn-secondary btn-lg active" href="{{ url_for('sign_up') }}">Sign up</a>
+</div>
+
+<p class="lead text-center p-0">
+    <b>Your stations</b> displayed on <b>your personalized dashboard</b></p>
+</p>
+<p class="lead text-center p-0">
+    Check if there is a bike available at your closest station, or see if a bike is available at a different destination.
+</p>
+<hr/>
+ 
 <!-- Placeholder to show it is dynamic -->
 <p>{{ context.server_time }}</p>
-<div>
-    <a class="btn btn-outline-primary" href="{{ url_for('sign_in') }}">Sign in</a>
-</div>
-<div>
-    <a class="btn btn-outline-secondary" href="{{ url_for('sign_up') }}">Sign up</a>
-</div>
 {% endblock content %}
