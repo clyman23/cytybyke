@@ -1,16 +1,85 @@
 {% extends "layout.html" %}
 
 {% block content %}
+
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <ul class>
+    {% for message in messages %}
+      <li>{{ message }}</li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+
 <h1>Welcome to sign-in page</h1>
 
 <h2>Enter your information below to see your CytyByke Dashboard</h2>
-<input type="text" name="email"
-               placeholder="Email Address"
-               value="{{ request.form['email'] }}"></input>
-<input type="text" name="password"
-                placeholder="Password"
-                value="{{ request.form['password'] }}"></input>
-<div>
-    <a class="btn btn-outline-primary" href="{{ url_for('dashboard') }}">Save</a>
-</div>
+
+<form id="login-form">
+
+    <input id="login" type="text" name="email" placeholder="Email Address"></input>
+    <input type="password" name="password" placeholder="Password"></input>
+    <input type="submit">
+</form>
+
+<script src="https://www.gstatic.com/firebasejs/9.6.4/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.4/firebase-auth-compat.js"></script>
+
+<script>
+  window.onload = () => {
+    console.log('Running onload')
+    const firebaseConfig = {
+      apiKey: "AIzaSyALE-ixa0ovDL8unWhkKt-5gwKQpWds2UY",
+      authDomain: "cytybyke-c917e.firebaseapp.com",
+      projectId: "cytybyke-c917e",
+      storageBucket: "cytybyke-c917e.appspot.com",
+      messagingSenderId: "4237355229",
+      appId: "1:4237355229:web:e0fcf24ab9f52534c01334",
+      measurementId: "G-750EM4JDLJ"
+    };
+
+    const app = firebase.initializeApp(firebaseConfig);
+
+    app.auth().setPersistence(firebase.auth.Auth.Persistence.NONE);
+
+    document
+      .getElementById("login-form")
+      .addEventListener("submit", (event) => {
+        event.preventDefault();
+        const login = event.target.login.value;
+        const password = event.target.password.value;
+
+        // REMOVE CONSOLE.LOG
+        // console.log(login);
+        // console.log(password);
+
+        app.auth().signInWithEmailAndPassword(login, password)
+          .then((userCredential) => {
+            const user = userCredential.user;
+            // REMOVE CONSOLE.LOG
+            // console.log(user);
+
+            user.getIdToken().then(function(idToken) {
+              fetch("/sessionLogin", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  idToken: idToken,
+                })
+              }).then(function(response) {
+                // REMOVE CONSOLE.LOG
+                // console.log("success!")
+                return response.json()
+              }).then(function (responseBody) {
+                window.location.assign("/dashboard")
+              }).catch(function(err) { debugger })
+            });
+          });
+      });
+  };
+</script>
+
 {% endblock content %}

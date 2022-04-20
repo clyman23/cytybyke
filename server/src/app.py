@@ -1,11 +1,13 @@
+import datetime
 import json
 import os
 import time
 
 import firebase_admin
 from firebase_admin import credentials, auth, exceptions
+import flask
 from flask import Flask, render_template, make_response, request, redirect, flash, url_for, Markup
-# import pyrebase
+import pyrebase
 
 app = Flask(__name__)
 
@@ -14,15 +16,23 @@ SECRET_KEY = "webeb1king@llday3verydayalri6ht"
 app.secret_key = SECRET_KEY
 
 
-LOCAL = os.environ.get("LOCAL", True)
-if LOCAL:
-    cred_filepath = "./server/config/firebase_admin_config.json"
-else:
-    cred_filepath = "./config/firebase_admin_config.json"
+LOCAL = os.environ.get("LOCAL", "local")
+if LOCAL == "local":
+    admin_cred_filepath = "./server/config/firebase_admin_config.json"
+    other_cred_filepath = "./server/config/firebase_config.json"
 
-cred = credentials.Certificate(cred_filepath)
+else:
+    admin_cred_filepath = "./config/firebase_admin_config.json"
+    other_cred_filepath = "./config/firebase_config.json"
+
+cred = credentials.Certificate(admin_cred_filepath)
 firebase_admin.initialize_app(cred)
-# pb = pyrebase.initialize_app(json.load(open("./config/firebase_config.json")))
+
+other_cred = json.load(open(other_cred_filepath))
+other_cred["serviceAccount"] = admin_cred_filepath
+other_cred["databaseURL"] = ""
+pb = pyrebase.initialize_app(other_cred)
+pb_auth = pb.auth()
 
 def format_server_time():
   server_time = time.localtime()
@@ -40,7 +50,7 @@ def index():
     response.headers["Cache-Control"] = "public, max-age=300, s-maxage=600"
     return response
 
-@app.route("/sign-in", methods=["GET", "POST"])
+@app.route("/sign-in")
 def sign_in():
     return render_template("sign-in.html")
 
@@ -50,38 +60,62 @@ def sign_up():
 
 @app.route("/dashboard")
 def dashboard():
-    return render_template("dashboard.html")
+    session_cookie = flask.request.cookies.get("session")
 
+    if not session_cookie:
+        # Session cookie is unavailable. Force user to login.
+        return redirect(url_for("sign_in"))
+
+    try:
+        # decoded_claims will have the info specific to that user and their cookie
+        decoded_claims = auth.verify_session_cookie(session_cookie, check_revoked=True)
+        return render_template("dashboard.html")
+    except auth.InvalidSessionCookieError:
+        # Session cookie is invalid, expired or revoked. Force user to login.
+        return redirect(url_for("sign_in"))
+
+# TODO: Repeated code to check session cookie can be updated using common function or decorator
 @app.route("/settings")
 def settings():
-    return render_template("settings.html")
+    session_cookie = flask.request.cookies.get("session")
 
-@app.route("/register", methods=["GET", "POST"])
-def register():
-    if request.method == "POST":
-        email = request.form["email"]
-        password = request.form["password"]
+    if not session_cookie:
+        # Session cookie is unavailable. Force user to login.
+        return redirect(url_for("sign_in"))
 
-        if len(password) < 6:
-            # TODO: Need to understand why flash messages show up in Cloud Run but not Firebase Hosting
-            flash("Password must be at least 6 characters long!")
-            return redirect(url_for("sign_up"))
+    try:
+        # decoded_claims will have the info specific to that user and their cookie
+        decoded_claims = auth.verify_session_cookie(session_cookie, check_revoked=True)
+        return render_template("settings.html")
+    except auth.InvalidSessionCookieError as e:
+        print("ERROR")
+        print(e)
+        # Session cookie is invalid, expired or revoked. Force user to login.
+        return redirect(url_for("sign_in"))
+
+@app.route("/sessionLogin", methods=["POST"])
+def session_login():
+    if request.method=="POST":
+        # TODO: REMOVE PRINT
+        # print(request.json)
+
+        id_token = request.json["idToken"]
+        expires_in = datetime.timedelta(days=5)
 
         try:
-            user = auth.create_user(email=email, password=password)
-            flash("Welcome to CytyByke!")
-            return redirect(url_for("settings"))
-        
-        except exceptions.AlreadyExistsError:
-            print("USER ALREADY EXISTS")
-            #TODO: Is Markup the right thing to use here to embed a link in a flash message?
-            flash(Markup("User already exists! Please try again with a new email or <a href='sign-in'>sign-in</a>."))
-            return redirect(url_for("sign_up"))
+            session_cookie = auth.create_session_cookie(id_token, expires_in=expires_in)
+            # response = redirect(url_for("dashboard"))
+            response = make_response({"status": "success"})
+            expires = datetime.datetime.now() + expires_in
+            # If secure=True, then you won't see it when you Inspect in the browser
+            response.set_cookie(
+                'session', session_cookie, expires=expires, httponly=True#, secure=True
+            )
 
-        except Exception as e:
-            print(e)
-            flash("Unknown error! Please try again.")
-            return redirect(url_for("sign_up"))
+            return response
+
+        except exceptions.FirebaseError:
+            return flask.abort(401, 'Failed to create a session cookie')
 
 
 if __name__ == "__main__":
