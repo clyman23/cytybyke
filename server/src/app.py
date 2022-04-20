@@ -60,27 +60,34 @@ def sign_up():
 
 @app.route("/dashboard")
 def dashboard():
-    session_cookie = flask.request.cookies.get("session")
+    session_cookie = flask.request.cookies.get("__session")
 
     if not session_cookie:
         # Session cookie is unavailable. Force user to login.
+        print("No session cookie")
         return redirect(url_for("sign_in"))
 
     try:
         # decoded_claims will have the info specific to that user and their cookie
         decoded_claims = auth.verify_session_cookie(session_cookie, check_revoked=True)
         return render_template("dashboard.html")
-    except auth.InvalidSessionCookieError:
+    except auth.InvalidSessionCookieError as e:
         # Session cookie is invalid, expired or revoked. Force user to login.
-        return redirect(url_for("sign_in"))
+        print("ERROR")
+        print(e)
+        print("Invalid session cookie")
+        response = {"error": e}
+        return response
+        # return redirect(url_for("sign_in"))
 
 # TODO: Repeated code to check session cookie can be updated using common function or decorator
 @app.route("/settings")
 def settings():
-    session_cookie = flask.request.cookies.get("session")
+    session_cookie = flask.request.cookies.get("__session")
 
     if not session_cookie:
         # Session cookie is unavailable. Force user to login.
+        print("No session cookie")
         return redirect(url_for("sign_in"))
 
     try:
@@ -90,6 +97,7 @@ def settings():
     except auth.InvalidSessionCookieError as e:
         print("ERROR")
         print(e)
+        print("Invalid session cookie")
         # Session cookie is invalid, expired or revoked. Force user to login.
         return redirect(url_for("sign_in"))
 
@@ -108,8 +116,9 @@ def session_login():
             response = make_response({"status": "success"})
             expires = datetime.datetime.now() + expires_in
             # If secure=True, then you won't see it when you Inspect in the browser
+            # IMPORTANT: CAN ONLY BE NAMED __session because of Firebase shtuff
             response.set_cookie(
-                'session', session_cookie, expires=expires, httponly=True#, secure=True
+                "__session", session_cookie, expires=expires, httponly=True#, secure=True
             )
 
             return response
