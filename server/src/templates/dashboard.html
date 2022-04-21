@@ -1,18 +1,72 @@
 {% extends "layout.html" %}
 
 {% block content %}
-<h1>Here's all your favorite stations :)</h1>
+<h1 class="text-center p-4">Your Dashboard</h1>
+<h2 class="text-center p-2">Here's your favorite <b>Citi Bike Stations</b></h2>
+<hr/>
+<div class="container">
+    <div class="row">
+        <div class="col-sm-3 p-2">
+            <h4>Preference</h4>
+        </div>
+        <div class="col-sm-3 p-2">
+            <h4>Station</h4>
+        </div>
+        <div class="col-sm-2 p-2">
+            <h4># Bikes</h4>
+        </div>
+        <div class="col-sm-2 p-2">
+            <h4># Parking</h4>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-3 p-2">
+            <h5><b>Favorite</b></h5>
+        </div>
+        <div class="col-sm-3 p-2">
+            <h5>123 Main St</h5>
+        </div>
+        <div class="col-sm-2 p-2">
+            <h6>#</h6>
+        </div>
+        <div class="col-sm-2 p-2">
+            <h6>#</h6>
+        </div>
+    </div>
 
-<h3>Station 1</h3>
-<h4>123 Main St</h4>
+    <div class="row">
+        <div class="col-sm-3 p-2">
+            <h5><b>Second Favorite</b></h5>
+        </div>
+        <div class="col-sm-3 p-2">
+            <h5>456 Sesame St</h5>
+        </div>
+        <div class="col-sm-2 p-2">
+            <h6>#</h6>
+        </div>
+        <div class="col-sm-2 p-2">
+            <h6>#</h6>
+        </div>
+    </div>
 
-<h3>Station 2</h3>
-<h4>456 Sesame St</h4>
-
-<h3>Station 3</h3>
-<h4>789 Lala St</h4>
-
-<div>
-    <a class="btn btn-outline-primary" href="{{ url_for('index') }}">Log Out</a>
+    <div class="row">
+        <div class="col-sm-3 p-2">
+            <h5><b>Third Favorite</b></h5>
+        </div>
+        <div class="col-sm-3 p-2">
+            <h5>789 Lala St</h5>
+        </div>
+        <div class="col-sm-2 p-2">
+            <h6>#</h6>
+        </div>
+        <div class="col-sm-2 p-2">
+            <h6>#</h6>
+        </div>
+    </div>
 </div>
+
+<hr/>
+
+<img class = " w-100 px-0" src="https://static.hwpi.harvard.edu/files/styles/os_files_xxlarge/public/datasmart/files/map_monday_12-11_image_1.png?m=1626890139&itok=19QrxLfq" class="rounded float-right" alt="">
+
 {% endblock content %}
