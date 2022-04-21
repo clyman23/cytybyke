@@ -1,6 +1,17 @@
 {% extends "layout.html" %}
 
+
+<h1>Welcome to sign-in page</h1>
+
+<h2>Enter your information below to see your CytyByke Dashboard</h2>
+
 {% block content %}
+<h1 class="text-center p-4">Hello Again!</h1>
+<h2 class="text-center p-2">View your <b>CytyByke</b> Dashboard</h2>
+<h3 class="text-center text-muted p-3">
+   Enter your information below to sign in
+</h3>
+<hr/>
 
 {% with messages = get_flashed_messages() %}
   {% if messages %}
@@ -12,15 +23,19 @@
   {% endif %}
 {% endwith %}
 
-<h1>Welcome to sign-in page</h1>
-
-<h2>Enter your information below to see your CytyByke Dashboard</h2>
-
 <form id="login-form">
+  <div class="row p-3">
+    <div class="form-group col-md-4 offset-lg-2">
+      <input id="login" type="text" name="email" class="form-control"  placeholder="Email Address" required></input>
+      <small id="emailHelp" class="form-text text-muted">Enter your email associated with your account</small>
+    </div>
+    <div class="form-group col-md-4">
+      <input type="password" name="password" class="form-control" placeholder="Password" minlength="6" required></input>
+      <small id="passwordHelp" class="form-text text-muted">Enter your password</small>
 
-    <input id="login" type="text" name="email" placeholder="Email Address"></input>
-    <input type="password" name="password" placeholder="Password"></input>
-    <input type="submit">
+    </div>
+  </div>
+  <input type="submit" class="btn-outline btn-dark btn-lg col-md-2 offset-lg-5" value="Get Rollin">
 </form>
 
 <script src="https://www.gstatic.com/firebasejs/9.6.4/firebase-app-compat.js"></script>
