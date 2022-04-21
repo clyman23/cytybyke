@@ -1,6 +1,13 @@
 {% extends "layout.html" %}
 
 {% block content %}
+<!-- TODO: Make logout button nicer and remove logout from layout.html -->
+<div>
+    <form id="logout-form">
+        <input type="submit" value="LOG OUT FOR REAL">
+    </form>
+</div>
+
 <h1 class="text-center p-4">Your Dashboard</h1>
 <h2 class="text-center p-2">Here's your favorite <b>Citi Bike Stations</b></h2>
 <hr/>
@@ -68,5 +75,46 @@
 <hr/>
 
 <img class = " w-100 px-0" src="https://static.hwpi.harvard.edu/files/styles/os_files_xxlarge/public/datasmart/files/map_monday_12-11_image_1.png?m=1626890139&itok=19QrxLfq" class="rounded float-right" alt="">
+
+<script src="https://www.gstatic.com/firebasejs/9.6.4/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.4/firebase-auth-compat.js"></script>
+
+<script>
+  window.onload = () => {
+    console.log('Running onload')
+    const firebaseConfig = {
+      apiKey: "AIzaSyALE-ixa0ovDL8unWhkKt-5gwKQpWds2UY",
+      authDomain: "cytybyke-c917e.firebaseapp.com",
+      projectId: "cytybyke-c917e",
+      storageBucket: "cytybyke-c917e.appspot.com",
+      messagingSenderId: "4237355229",
+      appId: "1:4237355229:web:e0fcf24ab9f52534c01334",
+      measurementId: "G-750EM4JDLJ"
+    };
+
+    const app = firebase.initializeApp(firebaseConfig);
+
+    app.auth().setPersistence(firebase.auth.Auth.Persistence.NONE);
+
+    document
+      .getElementById("logout-form")
+      .addEventListener("submit", (event) => {
+        event.preventDefault();
+
+        firebase.auth().signOut().then(() => {
+          console.log("Signing out...");
+          
+          fetch("/sessionLogout", {
+            method: "POST",
+          });
+        }).then(function(response) {
+          window.location.assign("/sign-in");
+        }).catch((error) => {
+      // An error happened.
+          console.log(error);
+        });
+    });
+};
+</script>
 
 {% endblock content %}
