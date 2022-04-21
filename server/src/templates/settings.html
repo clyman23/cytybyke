@@ -1,7 +1,4 @@
 {% extends "layout.html" %}
-<h1>Welcome to your Settings page</h1>
-
-<h2>Save your favorite stations!</h2>
 
 {% block content %}
 <h1 class="text-center p-4">Settings</h1>
@@ -23,17 +20,16 @@
 
 <form id="login-form">
   <div class="form-group p-3 col-md-6 offset-lg-3">
-      <!--Perhaps this type should be different to select from drop down menu-->
-      <input type="text" name="station1" class="form-control" placeholder="Favorite Station" value="{{ request.form['station1'] }}"></input>
+    <!--Perhaps this type should be different to select from drop down menu-->
+    <input type="text" name="station1" class="form-control" placeholder="Favorite Station" value="{{ request.form['station1'] }}"></input>
   </div>
   <div class="form-group p-3 col-md-6 offset-lg-3">
-      <input type="text" name="station2" class="form-control" placeholder="Second Favorite Station" value="{{ request.form['station2'] }}"></input>
+    <input type="text" name="station2" class="form-control" placeholder="Second Favorite Station" value="{{ request.form['station2'] }}"></input>
   </div>
   <div class="form-group p-3 col-md-6 offset-lg-3">
     <input type="text" name="station3" class="form-control" placeholder="Third Favorite Station" value="{{ request.form['station3'] }}"></input>
   </div>
-      <a class="btn-dark btn-lg col-md-4 offset-lg-5" href="{{ url_for('dashboard') }}" style='text-decoration:none;'>Save</a>
-  </div>
+  <!--center button-->
+  <a class="btn-dark btn-lg col-md-4 offset-lg-5" href="{{ url_for('dashboard') }}" style='text-decoration:none;'>Save</a>
 </form>
-
 {% endblock content %}
