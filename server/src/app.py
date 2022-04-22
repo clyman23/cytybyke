@@ -126,6 +126,13 @@ def session_login():
         except exceptions.FirebaseError:
             return flask.abort(401, 'Failed to create a session cookie')
 
+@app.route("/sessionLogout", methods=["POST"])
+def session_logout():
+    if request.method=="POST":
+        response = redirect(url_for("sign_in"))
+        response.set_cookie("__session", expires=0)
+        return response
+
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=int(os.environ.get('PORT', 8080)))
