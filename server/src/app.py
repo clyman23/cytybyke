@@ -4,7 +4,7 @@ import os
 import time
 
 import firebase_admin
-from firebase_admin import credentials, auth, exceptions
+from firebase_admin import credentials, auth, exceptions, db
 import flask
 from flask import Flask, render_template, make_response, request, redirect, flash, url_for, Markup
 import pyrebase
@@ -14,6 +14,12 @@ app = Flask(__name__)
 # Required for things like flash
 SECRET_KEY = "webeb1king@llday3verydayalri6ht"
 app.secret_key = SECRET_KEY
+
+
+# Default to Roosevelt Island Citi Bike station
+FIRST_STATION = "Motorgate"
+SECOND_STATION = "Roosevelt Island Tramway"
+THIRD_STATION = "Southpoint Park"
 
 
 LOCAL = os.environ.get("LOCAL", "local")
@@ -26,7 +32,10 @@ else:
     other_cred_filepath = "./config/firebase_config.json"
 
 cred = credentials.Certificate(admin_cred_filepath)
-firebase_admin.initialize_app(cred)
+firebase_admin.initialize_app(
+    cred,
+    {'databaseURL': 'https://cytybyke-c917e-default-rtdb.firebaseio.com/'}
+)
 
 other_cred = json.load(open(other_cred_filepath))
 other_cred["serviceAccount"] = admin_cred_filepath
@@ -61,6 +70,7 @@ def sign_up():
 @app.route("/dashboard")
 def dashboard():
     session_cookie = flask.request.cookies.get("__session")
+    print("Hello from dashboard")
 
     if not session_cookie:
         # Session cookie is unavailable. Force user to login.
@@ -70,7 +80,17 @@ def dashboard():
     try:
         # decoded_claims will have the info specific to that user and their cookie
         decoded_claims = auth.verify_session_cookie(session_cookie, check_revoked=True)
-        return render_template("dashboard.html")
+        user_uid = decoded_claims.get("uid", None)
+        user_db_data = _get_user_stations(user_uid)
+        context = {
+            "name": user_db_data.get("name", "You"),
+            "first_station": user_db_data.get("first_station", FIRST_STATION),
+            "second_station": user_db_data.get("second_station", SECOND_STATION),
+            "third_station": user_db_data.get("third_station", THIRD_STATION),
+        }
+
+        return render_template("dashboard.html", context=context)
+
     except auth.InvalidSessionCookieError as e:
         # Session cookie is invalid, expired or revoked. Force user to login.
         print("ERROR")
@@ -79,6 +99,11 @@ def dashboard():
         response = {"error": e}
         return response
         # return redirect(url_for("sign_in"))
+
+def _get_user_stations(user_uid: str):
+    user_ref = db.reference(f'/users/{user_uid}')
+    user_db_data = user_ref.get()
+    return user_db_data
 
 # TODO: Repeated code to check session cookie can be updated using common function or decorator
 @app.route("/settings")
@@ -94,6 +119,7 @@ def settings():
         # decoded_claims will have the info specific to that user and their cookie
         decoded_claims = auth.verify_session_cookie(session_cookie, check_revoked=True)
         return render_template("settings.html")
+
     except auth.InvalidSessionCookieError as e:
         print("ERROR")
         print(e)
@@ -132,6 +158,60 @@ def session_logout():
         response = redirect(url_for("sign_in"))
         response.set_cookie("__session", expires=0)
         return response
+
+@app.route("/userDbCreation", methods=["POST"])
+def user_db_creation():
+    if request.method=="POST":
+        user_uid = request.json["uid"]
+        user_name = request.json["name"]
+        first_station = request.json["first_station"]
+
+        if not user_name:
+            user_name = "You"
+
+        if not first_station:
+            first_station = FIRST_STATION
+
+        users_ref = db.reference('/users')
+
+        # Similar to a dict, use .set() or .update()
+        users_ref.update({
+            user_uid: {
+                "name": user_name,
+                "first_station": first_station,
+                "second_station": SECOND_STATION,
+                "third_station": THIRD_STATION,
+            }
+        })
+
+        return {"status": "successful db creation!"}
+
+@app.route("/updateUserDb", methods=["POST"])
+def update_user_db():
+    station_strings = ["first_station", "second_station", "third_station"]
+
+    if request.method=="POST":
+        session_cookie = flask.request.cookies.get("__session")
+
+        if not session_cookie:
+            return redirect(url_for("settings"))
+
+        decoded_claims = auth.verify_session_cookie(session_cookie, check_revoked=True)
+        user_uid = decoded_claims.get("uid", None)
+
+        user_inputs = request.json
+
+        updates = {
+            station_num: user_inputs[station_num]
+            for station_num in station_strings
+            if user_inputs[station_num] != ''
+        }
+
+        user_ref = db.reference(f'/users/{user_uid}')
+
+        user_ref.update(updates)
+
+        return {"status": "successful db update!"}
 
 
 if __name__ == "__main__":

@@ -8,7 +8,7 @@
     </form>
 </div>
 
-<h1 class="text-center p-4">Your Dashboard</h1>
+<h1 class="text-center p-4">{{ context.name }}'s Dashboard</h1>
 <h2 class="text-center p-2">Here's your favorite <b>Citi Bike Stations</b></h2>
 <hr/>
 
@@ -32,7 +32,7 @@
             <h5><b>Favorite</b></h5>
         </div>
         <div class="col-sm-5 p-2">
-            <h5>Southpoint Park</h5>
+            <h5>{{ context.first_station }}</h5>
         </div>
         <div class="col-sm-2 p-2">
             <h6>#</h6>
@@ -47,7 +47,7 @@
             <h5><b>Second Favorite</b></h5>
         </div>
         <div class="col-sm-5 p-2">
-            <h5>Roosevelt Island Tramway</h5>
+            <h5>{{ context.second_station }}</h5>
         </div>
         <div class="col-sm-2 p-2">
             <h6>#</h6>
@@ -62,7 +62,7 @@
             <h5><b>Third Favorite</b></h5>
         </div>
         <div class="col-sm-5 p-2">
-            <h5>Motorgate</h5>
+            <h5>{{ context.third_station }}</h5>
         </div>
         <div class="col-sm-2 p-2">
             <h6>#</h6>
