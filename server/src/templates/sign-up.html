@@ -25,7 +25,7 @@
       <small id="emailHelp" class="form-text text-muted">Enter your email (Required)</small>
     </div>
     <div class="form-group col-md-4">
-      <input type="password" name="password" class="form-control" placeholder="Password" minlength="6" required></input>
+      <input id="password" type="password" name="password" class="form-control" placeholder="Password" minlength="6" required></input>
       <small id="passwordHelp" class="form-text text-muted">Choose a password of 8 characters minimum (Required)</small>
     </div>
     <div class="form-row p-3">
@@ -69,6 +69,8 @@
         event.preventDefault();
         const login = event.target.login.value;
         const password = event.target.password.value;
+        const name = event.target.name.value;
+        const first_station = event.target.first_station.value;
 
         // REMOVE CONSOLE.LOG
         // console.log(login);
@@ -79,6 +81,8 @@
             const user = userCredential.user;
             // REMOVE CONSOLE.LOG
             // console.log(user);
+
+            // Since we are CREATING a user, we need to add a new section to the database
 
             user.getIdToken().then(function(idToken) {
               fetch("/sessionLogin", {
@@ -92,7 +96,20 @@
               }).then(function(response) {
                 // REMOVE CONSOLE.LOG
                 // console.log("success!")
-                return response.json()
+                console.log(user.uid);
+
+                fetch("/userDbCreation", {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({
+                    uid: user.uid,
+                    name: name,
+                    first_station: first_station,
+                  })
+                });
+                // return response.json();
               }).then(function (responseBody) {
                 window.location.assign("/dashboard")
               }).catch(function(err) { debugger })

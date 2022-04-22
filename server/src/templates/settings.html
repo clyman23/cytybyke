@@ -18,18 +18,68 @@
   {% endif %}
 {% endwith %}
 
-<form id="login-form">
+<form id="settings-form">
   <div class="form-group p-3 col-md-6 offset-lg-3">
     <!--Perhaps this type should be different to select from drop down menu-->
-    <input type="text" name="station1" class="form-control" placeholder="Favorite Station" value="{{ request.form['station1'] }}"></input>
+    <input id="first_station" type="text" name="station1" class="form-control" placeholder="Favorite Station"></input>
   </div>
   <div class="form-group p-3 col-md-6 offset-lg-3">
-    <input type="text" name="station2" class="form-control" placeholder="Second Favorite Station" value="{{ request.form['station2'] }}"></input>
+    <input id="second_station" type="text" name="station2" class="form-control" placeholder="Second Favorite Station"></input>
   </div>
   <div class="form-group p-3 col-md-6 offset-lg-3">
-    <input type="text" name="station3" class="form-control" placeholder="Third Favorite Station" value="{{ request.form['station3'] }}"></input>
+    <input id="third_station" type="text" name="station3" class="form-control" placeholder="Third Favorite Station"></input>
   </div>
   <!--center button-->
-  <a class="btn-dark btn-lg col-md-4 offset-lg-5" href="{{ url_for('dashboard') }}" style='text-decoration:none;'>Save</a>
+  <input type="submit" class="btn-dark btn-lg col-md-4 offset-lg-5" value="Save" style='text-decoration:none;'>
 </form>
+
+<script src="https://www.gstatic.com/firebasejs/9.6.4/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.4/firebase-auth-compat.js"></script>
+
+<script>
+  window.onload = () => {
+    console.log('Running onload')
+    const firebaseConfig = {
+      apiKey: "AIzaSyALE-ixa0ovDL8unWhkKt-5gwKQpWds2UY",
+      authDomain: "cytybyke-c917e.firebaseapp.com",
+      projectId: "cytybyke-c917e",
+      storageBucket: "cytybyke-c917e.appspot.com",
+      messagingSenderId: "4237355229",
+      appId: "1:4237355229:web:e0fcf24ab9f52534c01334",
+      measurementId: "G-750EM4JDLJ"
+    };
+
+    const app = firebase.initializeApp(firebaseConfig);
+
+    app.auth().setPersistence(firebase.auth.Auth.Persistence.NONE);
+
+    document
+      .getElementById("settings-form")
+      .addEventListener("submit", (event) => {
+        event.preventDefault();
+        const first_station = event.target.first_station.value;
+        const second_station = event.target.second_station.value;
+        const third_station = event.target.third_station.value;
+
+        console.log("Updating settings...");
+
+        fetch("/updateUserDb", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            first_station: first_station,
+            second_station: second_station,
+            third_station: third_station,
+          })
+        }).then(function(response) {
+          window.location.assign("/dashboard");
+        }).catch(error => {
+          console.log(error);
+        });
+    });
+  }
+</script>
+
 {% endblock content %}
