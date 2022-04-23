@@ -27,5 +27,32 @@
 </p>
  
 <!-- Placeholder to show it is dynamic -->
-<p>{{ context.server_time }}</p>
+<p>Server time: {{ context.server_time }}</p>
+
+<script src="https://www.gstatic.com/firebasejs/9.6.4/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.4/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.4/firebase-performance-compat.js"></script>
+
+<script>
+    window.onload = () => {
+        console.log('Running onload')
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyALE-ixa0ovDL8unWhkKt-5gwKQpWds2UY",
+            authDomain: "cytybyke-c917e.firebaseapp.com",
+            projectId: "cytybyke-c917e",
+            storageBucket: "cytybyke-c917e.appspot.com",
+            messagingSenderId: "4237355229",
+            appId: "1:4237355229:web:e0fcf24ab9f52534c01334",
+            measurementId: "G-750EM4JDLJ"
+        };
+
+        const app = firebase.initializeApp(firebaseConfig);
+
+        app.auth().setPersistence(firebase.auth.Auth.Persistence.NONE);
+
+        const perf = firebase.performance();
+    };
+</script>
+
 {% endblock content %}
