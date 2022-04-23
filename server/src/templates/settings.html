@@ -2,9 +2,9 @@
 
 {% block content %}
 <h1 class="text-center p-4">Settings</h1>
-<h2 class="text-center p-2">Save your <b>Citi Bike Docks</b></h2>
+<h2 class="text-center p-2">Save your <b>Citi Bike Stations</b></h2>
 <h3 class="text-center text-muted p-3">
-   Enter or update your preferred stations below
+   Update your display name or preferred stations
 </h3>
 <hr/>
 
@@ -20,6 +20,9 @@
 
 <form id="settings-form">
   <div class="form-group p-3 col-md-6 offset-lg-3">
+    <input id="name" type="text" name="name" class="form-control" placeholder="Display Name"></input>
+  </div>
+  <div class="form-group p-3 col-md-6 offset-lg-3">
     <!--Perhaps this type should be different to select from drop down menu-->
     <input id="first_station" type="text" name="station1" class="form-control" placeholder="Favorite Station"></input>
   </div>
@@ -30,7 +33,7 @@
     <input id="third_station" type="text" name="station3" class="form-control" placeholder="Third Favorite Station"></input>
   </div>
   <!--center button-->
-  <input type="submit" class="btn-dark btn-lg col-md-4 offset-lg-5" value="Save" style='text-decoration:none;'>
+  <input type="submit" class="btn-dark btn-lg col-md-2 offset-lg-5" value="Save" style='text-decoration:none;'>
 </form>
 
 <script src="https://www.gstatic.com/firebasejs/9.6.4/firebase-app-compat.js"></script>
@@ -60,6 +63,7 @@
         const first_station = event.target.first_station.value;
         const second_station = event.target.second_station.value;
         const third_station = event.target.third_station.value;
+        const name = event.target.name.value;
 
         console.log("Updating settings...");
 
@@ -72,6 +76,7 @@
             first_station: first_station,
             second_station: second_station,
             third_station: third_station,
+            name: name,
           })
         }).then(function(response) {
           window.location.assign("/dashboard");
