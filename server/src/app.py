@@ -188,7 +188,7 @@ def user_db_creation():
 
 @app.route("/updateUserDb", methods=["POST"])
 def update_user_db():
-    station_strings = ["first_station", "second_station", "third_station"]
+    station_and_name_strings = ["first_station", "second_station", "third_station", "name"]
 
     if request.method=="POST":
         session_cookie = flask.request.cookies.get("__session")
@@ -202,9 +202,9 @@ def update_user_db():
         user_inputs = request.json
 
         updates = {
-            station_num: user_inputs[station_num]
-            for station_num in station_strings
-            if user_inputs[station_num] != ''
+            station_or_name: user_inputs[station_or_name]
+            for station_or_name in station_and_name_strings
+            if user_inputs[station_or_name] != ''
         }
 
         user_ref = db.reference(f'/users/{user_uid}')
