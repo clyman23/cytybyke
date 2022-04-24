@@ -45,6 +45,7 @@
 
 <script src="https://www.gstatic.com/firebasejs/9.6.4/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.6.4/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.4/firebase-performance-compat.js"></script>
 
 <script>
   window.onload = () => {
@@ -62,6 +63,8 @@
     const app = firebase.initializeApp(firebaseConfig);
 
     app.auth().setPersistence(firebase.auth.Auth.Persistence.NONE);
+
+    const perf = firebase.performance();
 
     document
       .getElementById("signup-form")
