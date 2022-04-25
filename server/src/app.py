@@ -80,16 +80,6 @@ def dashboard():
     try:
         # decoded_claims will have the info specific to that user and their cookie
         decoded_claims = auth.verify_session_cookie(session_cookie, check_revoked=True)
-        user_uid = decoded_claims.get("uid", None)
-        user_db_data = _get_user_stations(user_uid)
-        context = {
-            "name": user_db_data.get("name", "You"),
-            "first_station": user_db_data.get("first_station", FIRST_STATION),
-            "second_station": user_db_data.get("second_station", SECOND_STATION),
-            "third_station": user_db_data.get("third_station", THIRD_STATION),
-        }
-
-        return render_template("dashboard.html", context=context)
 
     except auth.InvalidSessionCookieError as e:
         # Session cookie is invalid, expired or revoked. Force user to login.
@@ -98,12 +88,37 @@ def dashboard():
         print("Invalid session cookie")
         response = {"error": e}
         return response
-        # return redirect(url_for("sign_in"))
 
-def _get_user_stations(user_uid: str):
+    user_uid = decoded_claims.get("uid", None)
+    user_db_data = _get_user_db_data(user_uid)
+
+    # TODO: Insert code for getting station status
+    # _get_station_status()
+
+    context = {
+        "name": user_db_data.get("name", "You"),
+        "first_station": user_db_data.get("first_station", FIRST_STATION),
+        "second_station": user_db_data.get("second_station", SECOND_STATION),
+        "third_station": user_db_data.get("third_station", THIRD_STATION),
+        "first_station_bikes": 1,
+        "first_station_parking": 1,
+        "second_station_bikes": 1,
+        "second_station_parking": 1,
+        "third_station_bikes": 1,
+        "third_station_parking": 1,
+    }
+
+    return render_template("dashboard.html", context=context)
+
+def _get_user_db_data(user_uid: str) -> dict:
     user_ref = db.reference(f'/users/{user_uid}')
     user_db_data = user_ref.get()
     return user_db_data
+
+def _get_station_status(stations_list: list):
+    # Ping CitiBike API
+    # Get bike status for stations
+    pass
 
 # TODO: Repeated code to check session cookie can be updated using common function or decorator
 @app.route("/settings")
