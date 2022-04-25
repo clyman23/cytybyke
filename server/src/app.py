@@ -3,12 +3,12 @@ import json
 import os
 import time
 import requests
-import pandas as pd
 
 import firebase_admin
 from firebase_admin import credentials, auth, exceptions, db
 import flask
 from flask import Flask, render_template, make_response, request, redirect, flash, url_for, Markup
+import pandas as pd
 import pyrebase
 
 app = Flask(__name__)
@@ -23,8 +23,6 @@ FIRST_STATION = "Motorgate"
 SECOND_STATION = "Roosevelt Island Tramway"
 THIRD_STATION = "Southpoint Park"
 
-# Create Stations List
-stations_list = [FIRST_STATION, SECOND_STATION, THIRD_STATION]
 
 LOCAL = os.environ.get("LOCAL", "local")
 if LOCAL == "local":
@@ -96,19 +94,26 @@ def dashboard():
     user_uid = decoded_claims.get("uid", None)
     user_db_data = _get_user_db_data(user_uid)
 
+    stations_list = _get_station_list(user_db_data)
+
     # TODO: Insert code for getting station status
     top_station_status_df = _get_station_status(stations_list)
 
     context = {
         "name": user_db_data.get("name", "You"),
-        "first_station": user_db_data.get("first_station", FIRST_STATION),
-        "second_station": user_db_data.get("second_station", SECOND_STATION),
-        "third_station": user_db_data.get("third_station", THIRD_STATION),
+        "first_station": stations_list[0],
+        "second_station": stations_list[1],
+        "third_station": stations_list[2],
         "first_station_bikes": top_station_status_df['num_bikes_available'][0],
+        "first_station_ebikes": top_station_status_df['num_ebikes_available'][0],
+        "first_station_lat": top_station_status_df['lat'][0],
+        "first_station_lon": top_station_status_df['lon'][0],
         "first_station_parking": top_station_status_df['num_docks_available'][0],
         "second_station_bikes": top_station_status_df['num_bikes_available'][1],
+        "second_station_ebikes": top_station_status_df['num_ebikes_available'][1],
         "second_station_parking": top_station_status_df['num_docks_available'][1],
         "third_station_bikes": top_station_status_df['num_bikes_available'][2],
+        "third_station_ebikes": top_station_status_df['num_ebikes_available'][2],
         "third_station_parking": top_station_status_df['num_docks_available'][2],
     }
 
@@ -118,6 +123,13 @@ def _get_user_db_data(user_uid: str) -> dict:
     user_ref = db.reference(f'/users/{user_uid}')
     user_db_data = user_ref.get()
     return user_db_data
+
+def _get_station_list(user_db_data: dict) -> list:
+    return [
+        user_db_data.get("first_station", FIRST_STATION),
+        user_db_data.get("second_station", SECOND_STATION),
+        user_db_data.get("third_station", THIRD_STATION)
+    ]
 
 def _get_station_status(stations_list: list):
     # Ping CitiBike API
