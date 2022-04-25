@@ -1,7 +1,7 @@
 import datetime
 import json
 import os
-import time
+import pytz
 import requests
 
 import firebase_admin
@@ -45,18 +45,20 @@ other_cred["databaseURL"] = ""
 pb = pyrebase.initialize_app(other_cred)
 pb_auth = pb.auth()
 
-def format_server_time():
-  server_time = time.localtime()
-  return time.strftime("%I:%M:%S %p", server_time)
+def format_server_time() -> str:
+    """
+    Formats the server time as a string of HH:MM, followed by AM or PM. Assumes US East Coast
+    """
+    server_time = datetime.datetime.now(tz=pytz.timezone("US/Eastern"))
+    return server_time.strftime("%I:%M %p")
 
 @app.route("/")
 def index():
-    context = { 'server_time': format_server_time() }
     # A good example of how to use the cache. This is great because it will let us cache information and not
     # rerun code for every page load
     # The Citi Bike API should only be updating every 5 minutes (ish) so we can limit our page to store in the cache
     # every 5 minutes!
-    template = render_template("index.html", context=context)
+    template = render_template("index.html")
     response = make_response(template)
     response.headers["Cache-Control"] = "public, max-age=300, s-maxage=600"
     return response
@@ -100,6 +102,7 @@ def dashboard():
     top_station_status_df = _get_station_status(stations_list)
 
     context = {
+        "server_time": format_server_time(),
         "name": user_db_data.get("name", "You"),
         "first_station": stations_list[0],
         "second_station": stations_list[1],
@@ -117,7 +120,9 @@ def dashboard():
         "third_station_parking": top_station_status_df['num_docks_available'][2],
     }
 
-    return render_template("dashboard.html", context=context)
+    response = make_response(render_template("dashboard.html", context=context))
+    response.headers["Cache-Control"] = "public, max-age=300, s-maxage=300"
+    return response
 
 def _get_user_db_data(user_uid: str) -> dict:
     user_ref = db.reference(f'/users/{user_uid}')
