@@ -2,3 +2,4 @@ flask
 gunicorn
 firebase_admin
 pyrebase4
+pandas

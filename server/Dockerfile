@@ -5,7 +5,7 @@ WORKDIR /app
 
 COPY config/ /app/config
 
-RUN pip install flask gunicorn firebase_admin pyrebase4
+RUN pip install flask gunicorn firebase_admin pyrebase4 pandas
 
 ENV PORT 8080
 ENV LOCAL Dev
