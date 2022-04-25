@@ -2,6 +2,8 @@ import datetime
 import json
 import os
 import time
+import requests
+import pandas as pd
 
 import firebase_admin
 from firebase_admin import credentials, auth, exceptions, db
@@ -21,6 +23,8 @@ FIRST_STATION = "Motorgate"
 SECOND_STATION = "Roosevelt Island Tramway"
 THIRD_STATION = "Southpoint Park"
 
+# Create Stations List
+stations_list = [FIRST_STATION, SECOND_STATION, THIRD_STATION]
 
 LOCAL = os.environ.get("LOCAL", "local")
 if LOCAL == "local":
@@ -93,19 +97,19 @@ def dashboard():
     user_db_data = _get_user_db_data(user_uid)
 
     # TODO: Insert code for getting station status
-    # _get_station_status()
+    top_station_status_df = _get_station_status(stations_list)
 
     context = {
         "name": user_db_data.get("name", "You"),
         "first_station": user_db_data.get("first_station", FIRST_STATION),
         "second_station": user_db_data.get("second_station", SECOND_STATION),
         "third_station": user_db_data.get("third_station", THIRD_STATION),
-        "first_station_bikes": 1,
-        "first_station_parking": 1,
-        "second_station_bikes": 1,
-        "second_station_parking": 1,
-        "third_station_bikes": 1,
-        "third_station_parking": 1,
+        "first_station_bikes": top_station_status_df['num_bikes_available'][0],
+        "first_station_parking": top_station_status_df['num_docks_available'][0],
+        "second_station_bikes": top_station_status_df['num_bikes_available'][1],
+        "second_station_parking": top_station_status_df['num_docks_available'][1],
+        "third_station_bikes": top_station_status_df['num_bikes_available'][2],
+        "third_station_parking": top_station_status_df['num_docks_available'][2],
     }
 
     return render_template("dashboard.html", context=context)
@@ -117,8 +121,31 @@ def _get_user_db_data(user_uid: str) -> dict:
 
 def _get_station_status(stations_list: list):
     # Ping CitiBike API
+    status_url = "https://gbfs.citibikenyc.com/gbfs/en/station_status.json"
+    station_status_url = requests.get(status_url).json()
+    status_cols = ['station_id','num_docks_available','num_bikes_available','num_ebikes_available']
+
+    info_url = "https://gbfs.citibikenyc.com/gbfs/en/station_information.json"
+    station_info_url = requests.get(info_url).json()
+    cols = ['station_id','name','lat','lon','capacity']
+
+    # Get station info
+    station_data_df = pd.DataFrame(station_info_url['data']['stations'])
+    station_data_df = station_data_df[cols]
+    stations_list_df = station_data_df.loc[station_data_df['name'].isin(stations_list)]
+
     # Get bike status for stations
-    pass
+    stations_status_df = pd.DataFrame(station_status_url['data']['stations'])
+    stations_status_df = stations_status_df[status_cols]
+    stations_list_status_df = stations_list_df.merge(stations_status_df, how='left', on='station_id')
+    
+    # return df with top three station information and status in order of preference
+    final_stations_df = stations_list_status_df.loc[stations_list_status_df['name']==stations_list[0]]
+    final_stations_df = final_stations_df.append(stations_list_status_df.loc[stations_list_status_df['name']==stations_list[1]])
+    final_stations_df = final_stations_df.append(stations_list_status_df.loc[stations_list_status_df['name']==stations_list[2]])
+    final_stations_df = final_stations_df.reset_index()
+
+    return final_stations_df
 
 # TODO: Repeated code to check session cookie can be updated using common function or decorator
 @app.route("/settings")
