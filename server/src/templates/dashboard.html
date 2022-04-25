@@ -1,12 +1,6 @@
 {% extends "layout.html" %}
 
 {% block content %}
-<!-- TODO: Make logout button nicer and remove logout from layout.html -->
-<div>
-    <form id="logout-form">
-        <input type="submit" value="LOG OUT FOR REAL">
-    </form>
-</div>
 
 <h1 class="text-center p-4">{{ context.name }}'s Dashboard</h1>
 <h2 class="text-center p-2">Here's your favorite <b>Citi Bike Stations</b></h2>
@@ -102,7 +96,7 @@
     scrolling="no"
     marginheight="0"
     marginwidth="0"
-    src="https://maps.google.com/maps?q={{ context.first_station_lat }}, {{ context.first_station_lon }}&hl=en&z=14&amp;output=embed"
+    src="https://maps.google.com/maps?q={{ context.first_station_lat }}, {{ context.first_station_lon }}&hl=en&z=15&amp;output=embed"
     class="p-3"
     >
     </iframe>
@@ -151,5 +145,13 @@
     });
 };
 </script>
+
+<!--Log out button-->
+<hr/>
+<div>
+    <form id="logout-form" class="col-md-2 offset-lg-5 p-3">
+        <input type="submit" value="Log Out">
+    </form>
+</div>
 
 {% endblock content %}
