@@ -3,7 +3,7 @@
 {% block content %}
 
 <h1 class="text-center p-4">{{ context.name }}'s Dashboard</h1>
-<h2 class="text-center p-2">Here's your favorite <b>Citi Bike Stations</b></h2>
+<h2 class="text-center p-3">Here's your favorite <b>Citi Bike stations</b></h2>
 <hr/>
 
 <div class="container">
@@ -32,13 +32,13 @@
             <h5>{{ context.first_station }}</h5>
         </div>
         <div class="col-sm-2 p-2">
-            <h6>{{ context.first_station_bikes }}</h6>
+            <h5>{{ context.first_station_bikes }}</h5>
         </div>
         <div class="col-sm-2 p-2">
-            <h6>{{ context.first_station_ebikes }}</h6>
+            <h5>{{ context.first_station_ebikes }}</h5>
         </div>
         <div class="col-sm-2 p-2">
-            <h6>{{ context.first_station_parking }}</h6>
+            <h5>{{ context.first_station_parking }}</h5>
         </div>
     </div>
 
@@ -50,13 +50,13 @@
             <h5>{{ context.second_station }}</h5>
         </div>
         <div class="col-sm-2 p-2">
-            <h6>{{ context.second_station_bikes }}</h6>
+            <h5>{{ context.second_station_bikes }}</h5>
         </div>
         <div class="col-sm-2 p-2">
-            <h6>{{ context.second_station_ebikes }}</h6>
+            <h5>{{ context.second_station_ebikes }}</h5>
         </div>
         <div class="col-sm-2 p-2">
-            <h6>{{ context.second_station_parking }}</h6>
+            <h5>{{ context.second_station_parking }}</h5>
         </div>
     </div>
 
@@ -68,25 +68,25 @@
             <h5>{{ context.third_station }}</h5>
         </div>
         <div class="col-sm-2 p-2">
-            <h6>{{ context.third_station_bikes }}</h6>
+            <h5>{{ context.third_station_bikes }}</h5>
         </div>
         <div class="col-sm-2 p-2">
-            <h6>{{ context.third_station_ebikes }}</h6>
+            <h5>{{ context.third_station_ebikes }}</h5>
         </div>
         <div class="col-sm-2 p-2">
-            <h6>{{ context.third_station_parking }}</h6>
+            <h5>{{ context.third_station_parking }}</h5>
         </div>
     </div>
 </div>
 
 <div>
-    <p style="text-align:right" class=p-1>Station counts last refreshed: {{ context.server_time }}</p>
+    <p style="text-align:right" class="p-2 text-muted">Station counts last refreshed: {{ context.server_time }}</p>
 </div>
 
 <hr/>
 
 
-<h2 class="text-center p-3">Favorite station location</h2>
+<h2 class="text-center p-3"><b>Favorite station</b> location</h2>
 <h4 class="text-center">{{ context.first_station }}</h4>
 <div style="display: flex; justify-content: center;">
     <iframe
@@ -145,13 +145,5 @@
     });
 };
 </script>
-
-<!--Log out button-->
-<hr/>
-<div>
-    <form id="logout-form" class="col-md-2 offset-lg-5 p-3">
-        <input type="submit" value="Log Out">
-    </form>
-</div>
 
 {% endblock content %}
