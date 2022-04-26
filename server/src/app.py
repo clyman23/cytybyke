@@ -98,7 +98,7 @@ def dashboard():
 
     stations_list = _get_station_list(user_db_data)
 
-    # TODO: Insert code for getting station status
+    # getting station information
     top_station_status_df = _get_station_status(stations_list)
 
     context = {
@@ -121,7 +121,8 @@ def dashboard():
     }
 
     response = make_response(render_template("dashboard.html", context=context))
-    response.headers["Cache-Control"] = "public, max-age=300, s-maxage=300"
+    # TODO: fix cache control
+    # response.headers["Cache-Control"] = "public, max-age=300, s-maxage=300"
     return response
 
 def _get_user_db_data(user_uid: str) -> dict:
@@ -211,9 +212,9 @@ def session_login():
         except exceptions.FirebaseError:
             return flask.abort(401, 'Failed to create a session cookie')
 
-@app.route("/sessionLogout", methods=["POST"])
+@app.route("/sessionLogout", methods=["GET"])
 def session_logout():
-    if request.method=="POST":
+    if request.method=="GET":
         response = redirect(url_for("sign_in"))
         response.set_cookie("__session", expires=0)
         return response
